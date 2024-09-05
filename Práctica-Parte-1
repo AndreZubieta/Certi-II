@@ -1,0 +1,265 @@
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class Ejemplo {
+
+    //test 1
+    @Test
+    public void checkoutEnBlanco() throws InterruptedException {
+        WebDriverManager.edgedriver().setup();
+        EdgeOptions options = new EdgeOptions();
+        WebDriver driver = new EdgeDriver(options);
+        driver.get("https://www.saucedemo.com/v1/");
+
+        // Login
+        WebElement userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+            .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        WebElement passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys ("secret_sauce");
+        Thread.sleep(500);
+        WebElement loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+        // Añadir un producto al carrito
+        WebElement addToCartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".btn_inventory")));
+        addToCartButton.click();
+
+
+        // Ir al carrito
+        WebElement cartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("shopping_cart_link")));
+        cartButton.click();
+
+        // Ir al checkout
+        WebElement checkoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_action")));
+        checkoutButton.click();
+
+        //Confirm checkout
+        WebElement continueCheckoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_primary")));
+        continueCheckoutButton.click();
+
+
+        WebElement errorMessage = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.className("error-button")));
+        Assert.assertTrue("El mensaje de error no se mostró",errorMessage.isDisplayed());
+
+
+        Thread.sleep(5000);
+        driver.close();
+    }
+
+    //test 2
+    @Test
+    public void checkoutValido() throws InterruptedException {
+        WebDriverManager.edgedriver().setup();
+        EdgeOptions options = new EdgeOptions();
+        WebDriver driver = new EdgeDriver(options);
+        driver.get("https://www.saucedemo.com/v1/");
+
+        // Login
+        WebElement userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        WebElement passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys ("secret_sauce");
+        Thread.sleep(500);
+        WebElement loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+        // Añadir un producto al carrito
+        WebElement addToCartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".btn_inventory")));
+        addToCartButton.click();
+
+
+        // Ir al carrito
+        WebElement cartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("shopping_cart_link")));
+        cartButton.click();
+
+        // Ir al checkout
+        WebElement checkoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_action")));
+        checkoutButton.click();
+
+
+        WebElement firstNameField = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("first-name")));
+        firstNameField.sendKeys("John");
+
+        WebElement lastNameField = driver.findElement(By.id("last-name"));
+        lastNameField.sendKeys("Doe");
+
+        WebElement postalCodeField = driver.findElement(By.id("postal-code"));
+        postalCodeField.sendKeys("12345");
+
+
+        //Continue checkout
+        WebElement continueCheckoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_primary")));
+        continueCheckoutButton.click();
+
+        //Finish checkout
+        WebElement finishCheckoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_action")));
+        finishCheckoutButton.click();
+
+        // Verificar que la página de resumen del pedido se muestra
+        WebElement overviewTitle = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("checkout_complete_container")));
+        Assert.assertTrue("No se mostró la página de resumen del pedido.", overviewTitle.isDisplayed());
+
+        Thread.sleep(5000);
+        driver.close();
+    }
+
+    //test 3
+    @Test
+    public void carritoPermanece() throws InterruptedException {
+        WebDriverManager.edgedriver().setup();
+        EdgeOptions options = new EdgeOptions();
+        WebDriver driver = new EdgeDriver(options);
+        driver.get("https://www.saucedemo.com/v1/");
+
+        // Login
+        WebElement userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        WebElement passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys ("secret_sauce");
+        Thread.sleep(500);
+        WebElement loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+        // Añadir un producto al carrito
+        WebElement addToCartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("#inventory_container > div > div:nth-child(2) > div.pricebar > button")));
+        addToCartButton.click();
+
+        Thread.sleep(1000);
+        // Hacer logout
+        WebElement burgerButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("bm-burger-button")));
+        burgerButton.click();
+        WebElement logoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.id("logout_sidebar_link")));
+        logoutButton.click();
+
+        // Hacer login de nuevo
+        userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys ("secret_sauce");
+        Thread.sleep(500);
+        loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+
+
+        WebElement cartBadge = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#shopping_cart_container > a > span")));
+        Assert.assertEquals("El número de productos en el carrito no es el esperado.", "1",cartBadge.getText());
+
+        Thread.sleep(5000);
+        driver.close();
+    }
+
+    @Test
+    public void eliminarProducto() throws InterruptedException {
+        WebDriverManager.edgedriver().setup();
+        EdgeOptions options = new EdgeOptions();
+        WebDriver driver = new EdgeDriver(options);
+        driver.get("https://www.saucedemo.com/v1/");
+
+        // Login
+        WebElement userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        WebElement passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys("secret_sauce");
+        Thread.sleep(500);
+        WebElement loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+        // Añadir un producto al carrito
+        WebElement addToCartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("#inventory_container > div > div:nth-child(2) > div.pricebar > button")));
+        addToCartButton.click();
+
+        WebElement cartBadge = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#shopping_cart_container > a > span")));
+        Assert.assertEquals("El número de productos en el carrito no es el esperado.", "1",cartBadge.getText());
+
+        Thread.sleep(3000);
+
+        WebElement removeFromCartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_secondary")));
+        removeFromCartButton.click();
+
+        boolean carritoVacio = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("#shopping_cart_container > a > span")));
+        Assert.assertTrue("El carrito debería estar vacío después de eliminar el producto.",carritoVacio);
+
+        Thread.sleep(5000);
+        driver.close();
+
+    }
+    //test 5
+    @Test
+    public void CheckoutSinProductos() throws InterruptedException{
+        WebDriverManager.edgedriver().setup();
+        EdgeOptions options = new EdgeOptions();
+        WebDriver driver = new EdgeDriver(options);
+        driver.get("https://www.saucedemo.com/v1/");
+
+        // Login
+        WebElement userNameTextbox = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("user-name")));
+        userNameTextbox.sendKeys("standard_user");
+        WebElement passwordTextBox = driver.findElement(By.id("password"));
+        passwordTextBox.sendKeys("secret_sauce");
+        Thread.sleep(500);
+        WebElement loginButton = driver.findElement(By.id("login-button"));
+        loginButton.click();
+
+        // Ir al carrito
+        WebElement cartButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("shopping_cart_link")));
+        cartButton.click();
+
+        // Inentar ir al checkout
+        WebElement checkoutButton = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(By.className("btn_action")));
+        checkoutButton.click();
+
+        // Verificar que el botón de checkout está deshabilitado
+        Assert.assertFalse("El botón de checkout debería estar deshabilitado cuando el carrito está vacío.", checkoutButton.isEnabled());
+
+
+        Thread.sleep(5000);
+        driver.close();
+
+
+
+    }
+
+
+}
